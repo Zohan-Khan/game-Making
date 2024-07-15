@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess Game</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        table {
+            border-collapse: collapse;
+        }
+        td {
+            width: 60px;
+            height: 60px;
+            text-align: center;
+            vertical-align: middle;
+            font-size: 32px;
+        }
+        .white {
+            background-color: #eeeed2;
+        }
+        .black {
+            background-color: #769656;
+        }
+        .highlight {
+            background-color: yellow;
+        }
+    </style>
+</head>
+<body>
+    <table id="chessboard"></table>
+
+    <script>
+        const initialBoard = [
+            ['&#9820;', '&#9822;', '&#9821;', '&#9819;', '&#9818;', '&#9821;', '&#9822;', '&#9820;'],
+            ['&#9823;', '&#9823;', '&#9823;', '&#9823;', '&#9823;', '&#9823;', '&#9823;', '&#9823;'],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['&#9817;', '&#9817;', '&#9817;', '&#9817;', '&#9817;', '&#9817;', '&#9817;', '&#9817;'],
+            ['&#9814;', '&#9816;', '&#9815;', '&#9813;', '&#9812;', '&#9815;', '&#9816;', '&#9814;']
+        ];
+
+        let selectedPiece = null;
+        let selectedCell = null;
+
+        function createBoard() {
+            const table = document.getElementById('chessboard');
+            table.innerHTML = '';
+
+            for (let row = 0; row < 8; row++) {
+                const tr = document.createElement('tr');
+                for (let col = 0; col < 8; col++) {
+                    const td = document.createElement('td');
+                    td.className = (row + col) % 2 === 0 ? 'white' : 'black';
+                    td.innerHTML = initialBoard[row][col];
+                    td.dataset.row = row;
+                    td.dataset.col = col;
+                    td.addEventListener('click', handleCellClick);
+                    tr.appendChild(td);
+                }
+                table.appendChild(tr);
+            }
+        }
+
+        function handleCellClick(event) {
+            const row = event.target.dataset.row;
+            const col = event.target.dataset.col;
+
+            if (selectedPiece) {
+                movePiece(row, col);
+            } else {
+                selectPiece(row, col);
+            }
+        }
+
+        function selectPiece(row, col) {
+            const piece = initialBoard[row][col];
+            if (piece) {
+                selectedPiece = piece;
+                selectedCell = { row, col };
+                highlightCell(row, col, true);
+            }
+        }
+
+        function movePiece(row, col) {
+            if (selectedPiece) {
+                initialBoard[selectedCell.row][selectedCell.col] = '';
+                initialBoard[row][col] = selectedPiece;
+                selectedPiece = null;
+                selectedCell = null;
+                createBoard();
+            }
+        }
+
+        function highlightCell(row, col, highlight) {
+            const cells = document.querySelectorAll('td');
+            cells.forEach(cell => {
+                if (cell.dataset.row == row && cell.dataset.col == col) {
+                    cell.classList.toggle('highlight', highlight);
+                }
+            });
+        }
+
+        createBoard();
+    </script>
+</body>
+</html>
